@@ -1,0 +1,76 @@
+import uuid
+from fastapi import HTTPException,status
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
+from sqlalchemy import update ,delete
+from .. import schemas,models
+
+# from enum import Enum
+
+async def create_station_service(request:schemas.StationService,db:AsyncSession,current_user:schemas.User):
+    try:
+        new_station = models.StationService(
+        stationservicename=request.stationservicename,
+        description=request.description,
+        location=request.location,
+        owner_id=current_user.id
+    )
+        db.add(new_station)
+        await db.commit()
+        await db.refresh(new_station)
+        return new_station
+    except Exception as e:
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            detail=f"An error occurred: {str(e)}"
+        ) 
+    
+async def get_all_station_services(db:AsyncSession):
+    try:
+         result = await db.execute(select(models.StationService))
+         statioinservices = result.unique().scalars().all()  
+         return {"msg":"gotten successfully","data":statioinservices,"success":True}
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            detail=f"An error occurred: {str(e)}"
+        ) 
+        
+       
+        
+async def update_station_service(id:str,request:schemas.StationService,db:AsyncSession):
+    try:
+            result = await db.execute(select(models.StationService).filter(models.StationService.id == id))
+            stationservice = result.scalars().first()
+            if not stationservice:
+                raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail="stationservice not Found")
+            stmt = (
+            update(models.StationService).where(models.StationService.id == id).values(**request.model_dump(exclude_unset=True)))   
+            await db.execute(stmt)
+            await db.commit()
+            updated_result = await db.execute(select(models.StationService).filter(models.StationService.id == id))
+            return updated_result.scalars().first()
+    except Exception as e:
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            detail=f"An error occurred: {str(e)}"
+        ) 
+
+async def delete_station_service(id:str,db:AsyncSession):
+    try:
+            result = await db.execute(select(models.StationService).filter(models.StationService.id == id))
+            stationservice=result.scalars().first()
+            if not stationservice:
+                raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail="Stationservice not Found")   
+            stmt=(delete(models.StationService).where(models.StationService.id == id))
+            await db.execute(stmt)
+            await db.commit()
+            return HTTPException( detail = "deleted successfully" ,status_code=status.HTTP_200_OK)
+    except Exception as e:
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            detail=f"An error occurred: {str(e)}"
+        )       
