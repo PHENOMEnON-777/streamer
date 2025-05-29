@@ -12,6 +12,7 @@ class User(Base):
     email: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)
     password: Mapped[str] = mapped_column(String(225), nullable=False)
     number: Mapped[int] = mapped_column(Integer, nullable=False)
+    role: Mapped[str] = mapped_column(String(7), nullable=False)
     
     # Relationships
     stations: Mapped[list["StationService"]] = relationship("StationService", back_populates="owner", cascade="all, delete-orphan")

@@ -11,11 +11,15 @@ async def create(request:schemas.User,db:AsyncSession):
         email_exist =result.scalars().first()
         if email_exist:
             raise  HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail="Email already exists, please change your email")
-        user = models.User(name=request.name,email=request.email,password=hashing.Hash.bcrypt(request.password),number=request.number)
+        user = models.User(name=request.name,email=request.email,password=hashing.Hash.bcrypt(request.password),number=request.number,role=request.role)
         db.add(user)
         await db.commit()
         await db.refresh(user)
-        return user
+        return schemas.ResponseWrapper(
+            data=user,
+            msg="User Registered successfully",
+            success=True
+        )
     except Exception as e:
         await db.rollback()
         raise HTTPException(
@@ -34,7 +38,11 @@ async def getuserbyid(db:AsyncSession,current_user:schemas.User):
                  status_code=status.HTTP_400_BAD_REQUEST,
                  detail="Email already exists, please change your email"
              )
-        return {"msg":"got user by id successfully","data":user,"success":True,}
+        return schemas.ResponseWrapper(
+            data=user,
+            msg="got user by id successfully",
+            success=True
+        )
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, 
@@ -66,7 +74,11 @@ async def updateuser(request: schemas.User, db: AsyncSession, current_user: sche
         await db.commit()
 
         updated_result = await db.execute(select(models.User).filter(models.User.id == current_user.id))
-        return {"msg":"updated successfully","data":updated_result.scalars().first(),"success":True}
+        return schemas.ResponseWrapper(
+            data=updated_result.scalars().first(),
+            msg="updated successfully",
+            success=True
+        )
 
     except Exception as e:
         await db.rollback()

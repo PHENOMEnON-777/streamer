@@ -18,7 +18,11 @@ async def create_station_service(request:schemas.StationService,db:AsyncSession,
         db.add(new_station)
         await db.commit()
         await db.refresh(new_station)
-        return new_station
+        return schemas.ResponseWrapper(
+            data=new_station,
+            msg='Stations service created successfully',
+            success=True
+        )
     except Exception as e:
         await db.rollback()
         raise HTTPException(
@@ -30,7 +34,11 @@ async def get_all_station_services(db:AsyncSession):
     try:
          result = await db.execute(select(models.StationService))
          statioinservices = result.unique().scalars().all()  
-         return {"msg":"gotten successfully","data":statioinservices,"success":True}
+         return schemas.ResponseWrapper(
+            data=statioinservices,
+            msg='Stations service created successfully',
+            success=True
+        )
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, 
@@ -50,7 +58,11 @@ async def update_station_service(id:str,request:schemas.StationService,db:AsyncS
             await db.execute(stmt)
             await db.commit()
             updated_result = await db.execute(select(models.StationService).filter(models.StationService.id == id))
-            return updated_result.scalars().first()
+            return schemas.ResponseWrapper(
+                data=updated_result.scalars().first(),
+                msg="updated successfully",
+                success=True
+            )
     except Exception as e:
         await db.rollback()
         raise HTTPException(
@@ -67,7 +79,11 @@ async def delete_station_service(id:str,db:AsyncSession):
             stmt=(delete(models.StationService).where(models.StationService.id == id))
             await db.execute(stmt)
             await db.commit()
-            return HTTPException( detail = "deleted successfully" ,status_code=status.HTTP_200_OK)
+            return schemas.ResponseWrapper(
+                data='',
+                msg="deleted successfully",
+                success=True
+            )
     except Exception as e:
         await db.rollback()
         raise HTTPException(

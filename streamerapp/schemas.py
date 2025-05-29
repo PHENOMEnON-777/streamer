@@ -1,12 +1,21 @@
 from pydantic import BaseModel, EmailStr
-from typing import List, Optional
+from typing import Generic, List, Optional, TypeVar
 from datetime import datetime
+
+
+T = TypeVar('T')
+
+class ResponseWrapper(BaseModel, Generic[T]):
+    data: T
+    msg: str
+    success: bool
 
 # User models
 class UserBase(BaseModel):
     name: str
     email: EmailStr
     number: int
+    role:str
 
 class User(UserBase):
     password: str
@@ -15,7 +24,7 @@ class User(UserBase):
         from_attributes = True
 
 class ShowUser(UserBase):
-    id: str
+    # id: str
     
     class Config:
         from_attributes = True
@@ -64,7 +73,6 @@ class ShowStationService(BaseModel):
     stationservicename: str
     description: str
     location: str
-    owner_id: str
     # tanks: List[ShowTank] = []
     
     class Config:
