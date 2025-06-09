@@ -57,3 +57,25 @@ async def save_rpi_tank_readings( db: AsyncSession, tank_readings: List[schemas.
         "successfully_saved": successfully_saved_data,
         "failed_to_save": failed_to_save_data
     }
+ 
+ 
+async def getuserbystationId(id:str,db:AsyncSession,):
+    try:
+        result = await db.execute(select(models.StationService).filter(models.StationService.id  == id))
+        stationservice=result.scalars().first()
+        if not stationservice:
+           raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail="Stationservice with id '{id}' is not Found")
+        tanks = await db.execute(select(models.Tank).filter(models.Tank.station_id == id))
+        tanksfonud = tanks.scalars().all()
+        return schemas.ResponseWrapper(
+            data=tanksfonud,
+            msg='Tank found successfully',
+            success=True
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            detail=f"An error occurred: {str(e)}"
+        )
+    
+         
