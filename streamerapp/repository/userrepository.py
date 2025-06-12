@@ -2,7 +2,7 @@ from fastapi import HTTPException,status
 from .. import models,hashing,schemas
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from sqlalchemy import update
+from sqlalchemy import delete, update
 
 
 async def create(request:schemas.User,db:AsyncSession):
@@ -27,7 +27,20 @@ async def create(request:schemas.User,db:AsyncSession):
             detail=f"An error occurred: {str(e)}"
         )
     
-       
+async def getallusers(db:AsyncSession,current_user:schemas.User):
+    try:
+        result = await db.execute(select(models.User))
+        users = result.unique().scalars().all()
+        return schemas.ResponseWrapper(
+            data= users,
+            msg='got all Users successfully',
+            success=True
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            detail=f"An error occurred: {str(e)}"
+        )     
 
 async def getuserbyid(db:AsyncSession,current_user:schemas.User):
     try:
@@ -50,10 +63,10 @@ async def getuserbyid(db:AsyncSession,current_user:schemas.User):
         )    
     
 
-async def updateuser(request: schemas.User, db: AsyncSession, current_user: schemas.User):
+async def updateuser(request: schemas.User, id:str, db: AsyncSession, current_user: schemas.User):
     try:
         # Fetch the user to update
-        result = await db.execute(select(models.User).filter(models.User.id == current_user.id))
+        result = await db.execute(select(models.User).filter(models.User.id == id))
         user = result.scalars().first()
         if not user:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not Found")
@@ -69,11 +82,11 @@ async def updateuser(request: schemas.User, db: AsyncSession, current_user: sche
         if "password" in update_data:
             update_data["password"] = hashing.Hash.bcrypt(update_data["password"])
      
-        stmt = update(models.User).where(models.User.id == current_user.id).values(**update_data)
+        stmt = update(models.User).where(models.User.id == id).values(**update_data)
         await db.execute(stmt)
         await db.commit()
 
-        updated_result = await db.execute(select(models.User).filter(models.User.id == current_user.id))
+        updated_result = await db.execute(select(models.User).filter(models.User.id == id))
         return schemas.ResponseWrapper(
             data=updated_result.scalars().first(),
             msg="updated successfully",
@@ -86,3 +99,32 @@ async def updateuser(request: schemas.User, db: AsyncSession, current_user: sche
             status_code=status.HTTP_400_BAD_REQUEST, 
             detail=f"An error occurred: {str(e)}"
         )
+
+async def deleteuser(id:str,db:AsyncSession):
+    try:
+            result = await db.execute(select(models.User).filter(models.User.id == id))
+            user=result.scalars().first()
+            if not user:
+                raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail="User not Found")   
+            stmt=(delete(models.User).where(models.User.id == id))
+            await db.execute(stmt)
+            await db.commit()
+            user_data = {
+            "id": user.id,
+            "name": user.name,
+            "email": user.email,
+            "role":user.role,
+            "number":user.number
+            # Add other fields as needed
+        }
+            return schemas.ResponseWrapper(
+                data=user_data,
+                msg="deleted successfully",
+                success=True
+            )
+    except Exception as e:
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            detail=f"An error occurred: {str(e)}"
+        )       

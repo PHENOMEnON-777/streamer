@@ -26,7 +26,7 @@ async def loginuser(request:OAuth2PasswordRequestForm, db:AsyncSession):
         access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
         access_token = create_access_token(data={"sub": user.email,"id": user.id},expires_delta = access_token_expires)
         referesh_token = create_referesh_token(data={"sub":user.email,"id":user.id},)
-        return {"access_token" : access_token,"referesh_token":referesh_token, "token_type" : "bearer","success":True,"msg":"loged in successfully"}
+        return {"access_token" : access_token,"referesh_token":referesh_token,"token_type" : "bearer","success":True,"msg":"loged in successfully,","role":user.role}
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, 

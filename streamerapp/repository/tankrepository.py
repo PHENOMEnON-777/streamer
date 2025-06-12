@@ -65,10 +65,10 @@ async def getuserbystationId(id:str,db:AsyncSession,):
         stationservice=result.scalars().first()
         if not stationservice:
            raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail="Stationservice with id '{id}' is not Found")
-        tanks = await db.execute(select(models.Tank).filter(models.Tank.station_id == id))
-        tanksfonud = tanks.scalars().all()
+        tanks = await db.execute(select(models.Tank).filter(models.Tank.station_id == id).order_by(models.Tank.createdAt.asc()).limit(1))
+        tanksfonud = tanks.scalars().first()
         return schemas.ResponseWrapper(
-            data=tanksfonud,
+            data=[tanksfonud],
             msg='Tank found successfully',
             success=True
         )

@@ -24,7 +24,7 @@ class User(UserBase):
         from_attributes = True
 
 class ShowUser(UserBase):
-    # id: str
+    id: str
     
     class Config:
         from_attributes = True
