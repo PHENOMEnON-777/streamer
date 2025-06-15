@@ -48,4 +48,10 @@ async def receive_tank_data_from_rpi(
 @router.get("/gettankbystationId/{id}",response_model=schemas.ResponseWrapper[list[schemas.ShowTank]],status_code=status.HTTP_200_OK)
 async def gettankBystationId(id, db: AsyncSession = Depends(database.get_async_db),current_user:schemas.User = Depends(oauth2.get_current_user)):
     return await tankrepository.getuserbystationId(id ,db,)
+
+
+
+@router.get("/gettankdatabyId/{id}",response_model=schemas.ResponseWrapper[list[schemas.ShowTank]],status_code=status.HTTP_200_OK)
+async def gettankdatabyId(id, db: AsyncSession = Depends(database.get_async_db),current_user:schemas.User = Depends(oauth2.get_current_user)):
+    return await tankrepository.gettankdatabyId(id ,db,)
     
