@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from . import models
 from .database import async_engine
-from .routes import user,authentication,stationservice,tank
+from .routes import user,authentication,stationservice,tank,email
 from contextlib import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -26,4 +26,5 @@ app.include_router(user.router)
 app.include_router(authentication.router)
 app.include_router(stationservice.router)
 app.include_router(tank.router)
+app.include_router(email.router)
 

@@ -50,3 +50,10 @@ class Settings(BaseSettings):
     
 def get_settings() -> Settings:
     return Settings()
+
+
+class EmailConfig:
+    SMTP_SERVER = os.getenv("SMTP_SERVER", "smtp.gmail.com")
+    SMTP_PORT = int(os.getenv("SMTP_PORT", "587"))
+    EMAIL_ADDRESS = os.getenv("EMAIL_ADDRESS", "assolaange777@gmail.com")
+    EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD", "w p j v t j h r g s p d c n r k")

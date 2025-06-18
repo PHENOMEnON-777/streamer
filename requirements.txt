@@ -10,3 +10,4 @@ email-validator
 aiomysql 
 pydantic-settings
 python-dotenv
+aiofiles==23.2.1

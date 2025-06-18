@@ -90,7 +90,18 @@ class ShowStationService(BaseModel):
     class Config:
         from_attributes = True       
         
-        
+
+class EmailResponse(BaseModel):
+    success: bool
+    message: str
+    messageId: Optional[str] = None
+
+class EmailRequest(BaseModel):
+    from_email: EmailStr
+    to_email: EmailStr
+    subject: str
+    message: str
+    is_urgent: bool = False        
         
 class login(BaseModel):
     username:str
