@@ -45,28 +45,38 @@ class TankBase(BaseModel):
 
 # This schema will be used for incoming data from RPi
 class TankReceive(TankBase):
-    # No additional fields beyond TankBase needed for receiving
     pass
 
 class Tank(TankBase):
-    # This is for internal representation/db interaction if needed, often TankReceive suffices
     class Config:
         from_attributes = True
 
-class TankCreate(TankBase): # This might be used for manual creation without RPi's ID
-    id: Optional[str] = None # Make ID optional here if DB generates it normally
+class TankCreate(TankBase): 
+    id: Optional[str] = None 
     createdAt: Optional[datetime] = None
     updateAt: Optional[datetime] = None
 
 class ShowTank(TankBase): # For displaying from your main DB
-    # The 'id' and 'station_id' were already there.
-    # Ensure they match the actual database column names if different from Pydantic field names.
+   
     id: str
     station_id: str
 
     class Config:
         from_attributes = True
 
+class NotificationBase(BaseModel):
+    type:str
+    message:str
+    createdAt: datetime 
+    updateAt: datetime  
+
+class Notification(NotificationBase):
+    class Config:
+        from_attributes = True
+               
+class ShowNotification(NotificationBase):
+    class Config:
+        from_attributes = True
 # StationService models
 class StationServiceBase(BaseModel):
     stationservicename: str

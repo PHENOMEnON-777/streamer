@@ -52,3 +52,19 @@ class Tank(Base):
     
     # Relationships
     station: Mapped["StationService"] = relationship("StationService", back_populates="tanks")
+    
+    notifications: Mapped[list["Notification"]] = relationship("Notification", back_populates="tanks", cascade="all, delete-orphan")
+    
+
+
+class Notification(Base):
+    __tablename__ = 'notification'    
+    
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()), unique=True, nullable=False)
+    type: Mapped[str] = mapped_column(String(50), nullable=False)
+    message: Mapped[str] = mapped_column(String(500), nullable=False)
+    tank_id: Mapped[str] = mapped_column(String(36), ForeignKey("tank.id"), nullable=False)
+    
+    tanks: Mapped["Tank"] = relationship("Tank", back_populates="notifications")
+    
+    
