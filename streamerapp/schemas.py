@@ -67,14 +67,17 @@ class ShowTank(TankBase): # For displaying from your main DB
 class NotificationBase(BaseModel):
     type:str
     message:str
-    createdAt: datetime 
-    updateAt: datetime  
+      
 
 class Notification(NotificationBase):
     class Config:
         from_attributes = True
                
 class ShowNotification(NotificationBase):
+    id: str
+    tank_id: str
+    createdAt: datetime 
+    updateAt: datetime
     class Config:
         from_attributes = True
 # StationService models

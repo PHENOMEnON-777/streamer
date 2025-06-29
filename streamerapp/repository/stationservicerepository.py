@@ -95,8 +95,14 @@ async def delete_station_service(id:str,db:AsyncSession):
             stmt=(delete(models.StationService).where(models.StationService.id == id))
             await db.execute(stmt)
             await db.commit()
+            user_data = {
+           "id": stationservice.id,
+           "stationservicename": stationservice.stationservicename,
+           "description": stationservice.description,
+           "location": stationservice.location
+        }
             return schemas.ResponseWrapper(
-                data='',
+                data=user_data,
                 msg="deleted successfully",
                 success=True
             )

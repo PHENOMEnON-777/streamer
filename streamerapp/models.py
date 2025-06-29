@@ -64,6 +64,8 @@ class Notification(Base):
     type: Mapped[str] = mapped_column(String(50), nullable=False)
     message: Mapped[str] = mapped_column(String(500), nullable=False)
     tank_id: Mapped[str] = mapped_column(String(36), ForeignKey("tank.id"), nullable=False)
+    createdAt: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
+    updateAt: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
     
     tanks: Mapped["Tank"] = relationship("Tank", back_populates="notifications")
     

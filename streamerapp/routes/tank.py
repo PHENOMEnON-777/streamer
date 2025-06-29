@@ -14,9 +14,7 @@ router = APIRouter(
 )
 
 @router.post("/receive-data", response_model=schemas.ResponseWrapper[List[schemas.TankReceive]], status_code=status.HTTP_200_OK)
-async def receive_tank_data_from_rpi(
-    tank_readings: List[schemas.TankReceive],
-    db: AsyncSession = Depends(database.get_async_db)
+async def receive_tank_data_from_rpi( tank_readings: List[schemas.TankReceive],db: AsyncSession = Depends(database.get_async_db)
 ):
     """
     Receives tank data sent from the Raspberry Pi and uses the repository
@@ -25,7 +23,7 @@ async def receive_tank_data_from_rpi(
     if not tank_readings:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No tank readings provided.")
 
-    results = await tankrepository.save_rpi_tank_readings( tank_readings,db)
+    results = await tankrepository.save_rpi_tank_readings(db,tank_readings)
 
     successfully_saved = results["successfully_saved"]
     failed_to_save = results["failed_to_save"]
