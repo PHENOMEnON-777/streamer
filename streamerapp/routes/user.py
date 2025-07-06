@@ -16,6 +16,11 @@ async def create_user(request:schemas.User,db:AsyncSession = Depends(database.ge
 async def getallusers(db:AsyncSession = Depends(database.get_async_db),current_user:schemas.User = Depends(oauth2.get_current_user)):
     return await userrepository.getallusers(db,current_user)
 
+
+@router.get('/getallUsersformobile',status_code=status.HTTP_200_OK,response_model=schemas.ResponseWrapper[list[schemas.ShowUser]])
+async def getallusers(db:AsyncSession = Depends(database.get_async_db),):
+    return await userrepository.getallusersformobile(db,)
+
 @router.get('/getUserById',status_code=status.HTTP_200_OK,response_model= schemas.ResponseWrapper[schemas.ShowUser],)
 async def get_user_byId(db:AsyncSession=Depends(database.get_async_db),current_user:schemas.User= Depends(oauth2.get_current_user)):
  return await userrepository.getuserbyid(db,current_user)

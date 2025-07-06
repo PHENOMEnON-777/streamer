@@ -44,6 +44,20 @@ async def get_all_station_services(db:AsyncSession):
             status_code=status.HTTP_400_BAD_REQUEST, 
             detail=f"An error occurred: {str(e)}"
         )
+async def get_all_station_services_for_mobile(db:AsyncSession):
+    try:
+         result = await db.execute(select(models.StationService))
+         statioinservices = result.unique().scalars().all()  
+         return schemas.ResponseWrapper(
+            data=statioinservices,
+            msg=' got all Stations successfully',
+            success=True
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            detail=f"An error occurred: {str(e)}"
+        )        
         
         
 async def get_all_station_services_by_id(id,db:AsyncSession):
@@ -59,7 +73,23 @@ async def get_all_station_services_by_id(id,db:AsyncSession):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, 
             detail=f"An error occurred: {str(e)}"
-        )         
+        )
+        
+        
+async def get_all_station_services_by_id_for_mobile(id,db:AsyncSession):
+    try:
+         result = await db.execute(select(models.StationService).filter(models.StationService.owner_id==id))
+         statioinservices = result.unique().scalars().all()  
+         return schemas.ResponseWrapper(
+            data=statioinservices,
+            msg=' got all Stations successfully',
+            success=True
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            detail=f"An error occurred: {str(e)}"
+        )                 
         
        
         

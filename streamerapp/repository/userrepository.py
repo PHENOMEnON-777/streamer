@@ -40,7 +40,21 @@ async def getallusers(db:AsyncSession,current_user:schemas.User):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, 
             detail=f"An error occurred: {str(e)}"
-        )     
+        )
+async def getallusersformobile(db:AsyncSession,):
+    try:
+        result = await db.execute(select(models.User))
+        users = result.unique().scalars().all()
+        return schemas.ResponseWrapper(
+            data= users,
+            msg='got all Users successfully',
+            success=True
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            detail=f"An error occurred: {str(e)}"
+        )             
 
 async def getuserbyid(db:AsyncSession,current_user:schemas.User):
     try:

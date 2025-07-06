@@ -19,10 +19,18 @@ async def get_station_services(db: AsyncSession = Depends(database.get_async_db)
                             current_user: schemas.User = Depends(oauth2.get_current_user)):
     return await stationservicerepository.get_all_station_services(db)
 
+@router.get('/allStationServicesformobile', status_code=status.HTTP_200_OK,response_model=schemas.ResponseWrapper[list[schemas.ShowStationService]])
+async def get_station_services(db: AsyncSession = Depends(database.get_async_db),  ):
+    return await stationservicerepository.get_all_station_services_for_mobile(db)
+
 @router.get('/allStationServicesbyId/{id}', status_code=status.HTTP_200_OK,response_model=schemas.ResponseWrapper[list[schemas.ShowStationService]])
 async def get_station_services_by_id(id,db: AsyncSession = Depends(database.get_async_db),
                             current_user: schemas.User = Depends(oauth2.get_current_user)):
     return await stationservicerepository.get_all_station_services_by_id(id,db)
+
+@router.get('/allStationServicesbyIdformobile/{id}', status_code=status.HTTP_200_OK,response_model=schemas.ResponseWrapper[list[schemas.ShowStationService]])
+async def get_station_services_by_id(id,db: AsyncSession = Depends(database.get_async_db),):
+    return await stationservicerepository.get_all_station_services_by_id_for_mobile(id,db)
 
 
 @router.put('/updateStationService/{id}', status_code=status.HTTP_200_OK,response_model=schemas.ResponseWrapper[schemas.ShowStationService])
