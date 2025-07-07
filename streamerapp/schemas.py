@@ -70,8 +70,7 @@ class NotificationBase(BaseModel):
       
 
 class Notification(NotificationBase):
-    class Config:
-        from_attributes = True
+       pass
                
 class ShowNotification(NotificationBase):
     id: str
