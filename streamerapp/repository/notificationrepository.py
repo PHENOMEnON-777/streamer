@@ -213,6 +213,24 @@ async def auto_generate_notifications(tank_id: str, new_level: float, db: AsyncS
                     tank_id=tank_id
                 )
                 db.add(low_notification)
+                
+        if new_level > 70:
+            # Check if we already have a recent low fuel notification
+            recent_low_notification = await db.execute(
+                select(models.Notification)
+                .filter(models.Notification.tank_id == tank_id)
+                .filter(models.Notification.type == 'High')
+                .filter(models.Notification.createdAt >= datetime.now() - timedelta(hours=1))
+                .limit(1)
+            )
+            
+            if not recent_low_notification.scalars().first():
+                low_notification = models.Notification(
+                    type='High',
+                    message=f'High fuel alert: Tank {tank_id} level is {new_level}%',
+                    tank_id=tank_id
+                )
+                db.add(low_notification)        
         
         # Check for fuel increase
         previous_reading = await db.execute(

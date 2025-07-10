@@ -29,3 +29,12 @@ async def get_all_notifications(db: AsyncSession = Depends(database.get_async_db
 @router.post('/checktanklevels', status_code=status.HTTP_200_OK, response_model=schemas.ResponseWrapper[str])
 async def check_tank_levels(db: AsyncSession = Depends(database.get_async_db),):
     return await notificationrepository.checktanklevels(db)
+
+@router.post('/auto_generate_notifications/{tank_id}', status_code=status.HTTP_200_OK, response_model=schemas.ResponseWrapper[str])
+async def auto_generate_notifications(tank_id: str, request: schemas.TankReceive, db: AsyncSession = Depends(database.get_async_db)):
+    await notificationrepository.auto_generate_notifications(tank_id, request.level, db)
+    return schemas.ResponseWrapper(
+        data="Notifications generated successfully",
+        msg=f'Notifications checked for tank {tank_id}',
+        success=True
+    )
